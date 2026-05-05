@@ -1,0 +1,4 @@
+# Copilot Instructions
+
+## Project Guidelines
+- User requests full MVVM backend for Visionary Editor with preferences: implement RelayCommand and ViewModelBase (INotifyPropertyChanged), high-performance ImageConverter using WriteableBitmap/Interop to convert between OpenCvSharp.Mat and BitmapSource, ImageProcessingService implementing IImageProcessor (adjustments, filters, blur) with Mat cloning and proper disposal, AIService skeleton for ONNX inference pipeline, MainViewModel with async debounced processing using CancellationTokenSource, Undo/Redo stack limited to 10 Mat entries, use Task.Run for CPU-bound work, target .NET 10 and WPF, strict memory management.

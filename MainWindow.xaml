@@ -1,12 +1,204 @@
 ﻿<Window x:Class="ImageEditor.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ImageEditor"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="#121212"
+        Title="Visionary Editor Pro" Height="900" Width="1400">
 
-    </Grid>
+    <Window.Resources>
+        <!-- ĐỊNH NGHĨA NỀN CARO (TRANSPARENCY BACKGROUND) -->
+        <VisualBrush x:Key="CheckerboardBrush" TileMode="Tile" Viewport="0,0,20,20" ViewportUnits="Absolute">
+            <VisualBrush.Visual>
+                <Grid Width="20" Height="20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="10"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="10"/>
+                    </Grid.RowDefinitions>
+                    <!-- Hai ô màu xám đậm -->
+                    <Rectangle Grid.Row="0" Grid.Column="0" Fill="#252525"/>
+                    <Rectangle Grid.Row="1" Grid.Column="1" Fill="#252525"/>
+                    <!-- Hai ô màu đen xám -->
+                    <Rectangle Grid.Row="0" Grid.Column="1" Fill="#1E1E1E"/>
+                    <Rectangle Grid.Row="1" Grid.Column="0" Fill="#1E1E1E"/>
+                </Grid>
+            </VisualBrush.Visual>
+        </VisualBrush>
+    </Window.Resources>
+
+    <DockPanel LastChildFill="True">
+        <!-- 1. TOP MENU BAR -->
+        <Menu DockPanel.Dock="Top" Background="#1E1E1E" Foreground="White" Padding="5">
+            <MenuItem Header="Tệp" Foreground="White">
+                <MenuItem Header="Mở ảnh" Foreground="White" Click="MenuItem_OpenImage"/>
+                <MenuItem Header="Lưu ảnh" Foreground="White" />
+                <Separator/>
+                <MenuItem Header="Thoát" Foreground="White" />
+            </MenuItem>
+            <MenuItem Header="Chỉnh sửa" Foreground="White"/>
+            <MenuItem Header="Hình ảnh" Foreground="White"/>
+            <MenuItem Header="Lớp" Foreground="White"/>
+            <MenuItem Header="Chọn" Foreground="White"/>
+            <MenuItem Header="Di chuyển" Foreground="White"/>
+            <MenuItem Header="Bộ lọc" Foreground="White"/>
+            <MenuItem Header="Xem" Foreground="White"/>
+            <MenuItem Header="Hỗ trợ" Foreground="White"/>
+        </Menu>
+
+        <!-- 2. SUB-TOP TOOL PROPERTIES -->
+        <Border DockPanel.Dock="Top" Background="#252525" Height="60" BorderBrush="#121212" BorderThickness="0,1,0,1">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0">
+                <Button Name="BtnOpenImage"
+                        Style="{StaticResource MaterialDesignFlatButton}" 
+                        Foreground="White" Height="30" Padding="15,0"
+                        Click="BtnOpenImage_Click">
+                    
+                    <StackPanel Orientation="Horizontal">
+                        <md:PackIcon Kind="FolderOpen" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Mở ảnh" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Height="30" Margin="10,0">
+                    <StackPanel Orientation="Horizontal">
+                        <md:PackIcon Kind="ContentCopy" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Nhân bản" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Separator Margin="10,8" Background="#444444"/>
+                <TextBlock Text="Vị trí layer đã bị khóa, mở khóa để di chuyển." VerticalAlignment="Center" Foreground="#888888" FontStyle="Italic"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 3. LEFT TOOLBAR -->
+        <Border DockPanel.Dock="Left" Width="50" Background="#1E1E1E" BorderBrush="#121212" BorderThickness="0,0,1,0">
+            <Grid>
+                <StackPanel Margin="0,10">
+                    <Button Style="{StaticResource MaterialDesignIconButton}" ToolTip="Select Tool" Foreground="White">
+                        <md:PackIcon Kind="CursorDefaultOutline" />
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignIconButton}" ToolTip="Crop Tool" Foreground="#AAAAAA">
+                        <md:PackIcon Kind="Crop" />
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignIconButton}" ToolTip="Magic Wand" Foreground="#AAAAAA">
+                        <md:PackIcon Kind="AutoFix" />
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignIconButton}" ToolTip="Brush" Foreground="#AAAAAA">
+                        <md:PackIcon Kind="Brush" />
+                    </Button>
+                </StackPanel>
+
+                <!-- Color Swatch at Bottom -->
+                <StackPanel VerticalAlignment="Bottom" Margin="0,20" HorizontalAlignment="Center">
+                    <Grid Width="30" Height="30">
+                        <Border Background="White" Width="20" Height="20" HorizontalAlignment="Left" VerticalAlignment="Top" CornerRadius="2" BorderBrush="Black" BorderThickness="1"/>
+                        <Border Background="Black" Width="20" Height="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" CornerRadius="2" BorderBrush="Gray" BorderThickness="1"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 4. RIGHT SIDE PANELS -->
+        <Border DockPanel.Dock="Right" Width="280" Background="#1E1E1E" BorderBrush="#121212" BorderThickness="1,0,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <!-- Navigator -->
+                    <RowDefinition Height="*"/>
+                    <!-- Layers -->
+                    <RowDefinition Height="250"/>
+                    <!-- History -->
+                </Grid.RowDefinitions>
+
+                <!-- Navigator Section -->
+                <Expander Header="Điều hướng" IsExpanded="True" Grid.Row="0" Foreground="White" md:ExpanderAssist.HeaderBackground="#252525">
+                    <StackPanel Margin="5">
+                        <Border Height="120" Background="{StaticResource CheckerboardBrush}" BorderBrush="#333" BorderThickness="1">
+                            <!-- Ảnh nhỏ preview ở đây -->
+                            <Image Source="{Binding ImagePreview}" Stretch="Uniform"/>
+                        </Border>
+                        <Grid Margin="0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="-" Grid.Column="0" Foreground="White" VerticalAlignment="Center"/>
+                            <Slider Grid.Column="1" Minimum="10" Maximum="200" Value="44" Margin="10,0"/>
+                            <TextBlock Text="+" Grid.Column="2" Foreground="White" VerticalAlignment="Center"/>
+                            <TextBlock Text="44%" Grid.Column="3" Foreground="White" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        </Grid>
+                    </StackPanel>
+                </Expander>
+
+                <!-- Layers Section -->
+                <Expander Header="Các layer" IsExpanded="True" Grid.Row="1" Foreground="White" md:ExpanderAssist.HeaderBackground="#252525">
+                    <Grid>
+                        <ListBox Background="Transparent" BorderThickness="0">
+                            <!-- Layer items go here -->
+                        </ListBox>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="5">
+                            <Button Style="{StaticResource MaterialDesignIconButton}" Width="30" Height="30">
+                                <md:PackIcon Kind="Plus" Foreground="Gray"/>
+                            </Button>
+                            <Button Style="{StaticResource MaterialDesignIconButton}" Width="30" Height="30">
+                                <md:PackIcon Kind="DeleteOutline" Foreground="Gray"/>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Expander>
+
+                <!-- History Section -->
+                <Expander Header="Lịch sử" IsExpanded="True" Grid.Row="2" Foreground="White" md:ExpanderAssist.HeaderBackground="#252525">
+                    <ListBox Background="Transparent" BorderThickness="0">
+                        <ListBoxItem Background="#00897B" Foreground="White">
+                            <DockPanel LastChildFill="True">
+                                <md:PackIcon Kind="FileImageOutline" VerticalAlignment="Center"/>
+                                <TextBlock Text="Xóa ảnh" Margin="10,0" VerticalAlignment="Center"/>
+                                <md:PackIcon Kind="DeleteOutline" HorizontalAlignment="Right"/>
+                            </DockPanel>
+                        </ListBoxItem>
+                    </ListBox>
+                </Expander>
+            </Grid>
+        </Border>
+
+        <!-- 5. MAIN CANVAS AREA -->
+        <Grid Background="#121212">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="#121212">
+                <Grid Margin="100">
+                    <!-- Shadow giả cho Canvas -->
+                    <Border Background="Black" Opacity="0.3" Margin="5,5,-5,-5" Width="800" Height="600"/>
+
+                    <!-- Nền caro và Ảnh chính -->
+                    <Border Background="{StaticResource CheckerboardBrush}" Width="800" Height="600" BorderBrush="#333" BorderThickness="1">
+                        <Image Source="{Binding DisplayImageSource}" 
+                               RenderOptions.BitmapScalingMode="NearestNeighbor">
+                            <Image.LayoutTransform>
+                                <ScaleTransform ScaleX="1.0" ScaleY="1.0"/>
+                            </Image.LayoutTransform>
+                        </Image>
+                    </Border>
+                </Grid>
+            </ScrollViewer>
+
+            <!-- Status Bar Information -->
+            <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="15" Orientation="Horizontal">
+                <Border Background="#1E1E1E" Padding="5,2" CornerRadius="2">
+                    <TextBlock Name="StatusText" Text="Chưa tải ảnh" Foreground="#888888" FontSize="11"/>
+                </Border>
+            </StackPanel>
+
+            <!-- Save/Download FAB -->
+            <Button Style="{StaticResource MaterialDesignFloatingActionMiniSecondaryButton}"
+                    VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="20"
+                    Background="#00897B" BorderBrush="Transparent">
+                <md:PackIcon Kind="Download" Foreground="White"/>
+            </Button>
+        </Grid>
+    </DockPanel>
 </Window>
