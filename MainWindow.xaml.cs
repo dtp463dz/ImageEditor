@@ -28,13 +28,24 @@ namespace ImageEditor
         {
             LoadImage();
         }
+        private void BtnSaveImage_Click(object sender, RoutedEventArgs e)
+        {
+            SaveImage();
+        }
 
         // Menu item event handler
         private void MenuItem_OpenImage(object sender, RoutedEventArgs e)
         {
             LoadImage();
         }
-
+        private void MenuItem_SaveImage(object sender, RoutedEventArgs e)
+        {
+            SaveImage();
+        }
+        private void MenuItem_Exit(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
         // Hiển thị ảnh
         public void LoadImage()
         {
@@ -98,6 +109,62 @@ namespace ImageEditor
             else
             {
                 StatusText.Text = "Chưa tải ảnh";
+            }
+        }
+
+        // Lưu ảnh hiện tại vào file
+        public void SaveImage()
+        {
+            try
+            {
+                if(displayImage == null)
+                {
+                    MessageBox.Show("Không có ảnh để lưu!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "PNG Image (*.png)|*.png|" +
+                    "JPEG Image (*.jpg)|*.jpg|" +
+                    "BMP Image (*.bmp)|*.bmp|" +
+                    "All Files (*.*)|*.*";
+                saveFileDialog.Title = "Lưu ảnh";
+                saveFileDialog.DefaultExt = "png";
+                if(saveFileDialog.ShowDialog() == true)
+                {
+                    string filePath = saveFileDialog.FileName;
+                    SaveImageToFile(displayImage, filePath);
+                    MessageBox.Show($"Ảnh đã được lưu tại: \n{filePath}", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi lưu ảnh: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void SaveImageToFile(BitmapImage image, string filePath)
+        {
+            BitmapEncoder encoder;
+            string extension = Path.GetExtension(filePath).ToLower();
+            switch (extension)
+            {
+                case ".jpg":
+                case ".jpeg":
+                    encoder = new JpegBitmapEncoder { QualityLevel = 95 };
+                    break;
+                case ".bmp":
+                    encoder = new BmpBitmapEncoder();
+                    break;
+                case ".png":
+                default:
+                    encoder = new PngBitmapEncoder();
+                    break;
+            }
+
+            encoder.Frames.Add(BitmapFrame.Create(image));
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                encoder.Save(fileStream);
             }
         }
 

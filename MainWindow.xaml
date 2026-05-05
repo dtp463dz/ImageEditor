@@ -35,9 +35,9 @@
         <Menu DockPanel.Dock="Top" Background="#1E1E1E" Foreground="White" Padding="5">
             <MenuItem Header="Tệp" Foreground="White">
                 <MenuItem Header="Mở ảnh" Foreground="White" Click="MenuItem_OpenImage"/>
-                <MenuItem Header="Lưu ảnh" Foreground="White" />
+                <MenuItem Header="Lưu ảnh" Foreground="White" Click="MenuItem_SaveImage"/>
                 <Separator/>
-                <MenuItem Header="Thoát" Foreground="White" />
+                <MenuItem Header="Thoát" Foreground="White" Click="MenuItem_Exit"/>
             </MenuItem>
             <MenuItem Header="Chỉnh sửa" Foreground="White"/>
             <MenuItem Header="Hình ảnh" Foreground="White"/>
