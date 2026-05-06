@@ -39,7 +39,14 @@
                 <Separator/>
                 <MenuItem Header="Thoát" Foreground="White" Click="MenuItem_Exit"/>
             </MenuItem>
-            <MenuItem Header="Chỉnh sửa" Foreground="White"/>
+            <MenuItem Header="Chỉnh sửa" Foreground="White">
+                <MenuItem Header="Xóa ảnh" Foreground="White" Click="MenuItem_DeleteImage"/>
+                <MenuItem Header="Quay về ban đầu" Foreground="White" Click="MenuItem_ResetImage"/>
+                <Separator/>
+                <MenuItem Header="Cắt (Px)" Foreground="White" Click="MenuItem_CropImage"/>
+                <MenuItem Header="Cắt (%)" Foreground="White" Click="MenuItem_CropPercentImage"/>
+            </MenuItem>
+            
             <MenuItem Header="Hình ảnh" Foreground="White"/>
             <MenuItem Header="Lớp" Foreground="White"/>
             <MenuItem Header="Chọn" Foreground="White"/>
@@ -62,14 +69,46 @@
                         <TextBlock Text="Mở ảnh" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
-                <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Height="30" Margin="10,0">
+                <Button Name="BtnDeleteImage"
+                        Style="{StaticResource MaterialDesignFlatButton}" 
+                        Foreground="White" Height="35" Margin="10,0" 
+                        Click="BtnDeleteImage_Click">
                     <StackPanel Orientation="Horizontal">
-                        <md:PackIcon Kind="ContentCopy" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Nhân bản" VerticalAlignment="Center"/>
+                        <md:PackIcon Kind="Delete" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Xóa ảnh" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Name="BtnCropImage"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" Height="35" Padding="15,0"
+                        Click="BtnCropImage_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <md:PackIcon Kind="Crop" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Cắt ảnh" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
                 <Separator Margin="10,8" Background="#444444"/>
-                <TextBlock Text="Vị trí layer đã bị khóa, mở khóa để di chuyển." VerticalAlignment="Center" Foreground="#888888" FontStyle="Italic"/>
+
+                <Button Name="BtnReset"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" Height="35" Padding="15,0"
+                        Click="BtnReset_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <md:PackIcon Kind="Undo" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Quay lại" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Name="BtnSaveImage"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White"
+                        Height="35"
+                        Padding="15,0" Click="BtnSaveImage_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <md:PackIcon Kind="Download" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Lưu ảnh" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </Border>
 
