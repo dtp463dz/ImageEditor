@@ -16,11 +16,27 @@ namespace ImageEditor
         private BitmapImage originalImage = null;
         // lưu ảnh hiện tại đang hiển thị
         private BitmapImage displayImage = null;
+        // lưu state chỉnh sửa hiện tại
+        private int currentBrightness = 0;
+        private int currentContrast = 0;
+        private int currentSaturation = 0;
+        
+        private int currentRed = 0;
+        private int currentGreen = 0;
+        private int currentBlue = 0;
+        private int currentHue = 0;
 
         public MainWindow()
         {
-            InitializeComponent();
-            this.DataContext = new ImageViewModel { DisplayImageSource = null };
+            try
+            {
+                InitializeComponent();
+                this.DataContext = new ImageViewModel { DisplayImageSource = null };
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Init error: {ex.Message}\n{ex.StackTrace}", "Error");
+            }
         }
 
         // Event handler từ giao diện
@@ -43,6 +59,20 @@ namespace ImageEditor
         private void BtnReset_Click(object sender, RoutedEventArgs e)
         {
             ResetToOriginal();
+        }
+
+        // chỉnh sửa sáng tối
+        private void BtnBrightness_Click(object sender, RoutedEventArgs e)
+        {
+            if(displayImage == null)
+            {
+                MessageBox.Show("Vui lòng tải ảnh trước");
+                return;
+            }
+            if (TabBrightness != null) 
+            {
+                TabBrightness.IsSelected = true;
+            }
         }
 
         // Menu item event handler
@@ -74,6 +104,13 @@ namespace ImageEditor
         {
             ResetToOriginal();
         }
+
+        // menu sáng tối
+        private void MenuItem_ShowBrightnessPanel(object sender, RoutedEventArgs e)
+        {
+            BtnBrightness_Click(null, null);
+        }
+
         // Hiển thị ảnh
         public void LoadImage()
         {
@@ -250,6 +287,25 @@ namespace ImageEditor
             return image;
         }
 
+        // hàm chuyển đổi WriteableBitmap sang BitmapImage
+        private BitmapImage ConvertWriteableBitmapToImage(WriteableBitmap writeableBitmap)
+        {
+            BitmapImage image = new BitmapImage();
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                PngBitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(writeableBitmap));
+                encoder.Save(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                image.BeginInit();
+                image.StreamSource = memoryStream;
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.EndInit();
+                image.Freeze();
+            }
+            return image;
+        }
+
         // Cắt ảnh theo tỉ lệ phần trăm
         public void CropImageByPercentage(double leftPercent, double topPercent, double widthPercent, double heightPercent)
         {
@@ -323,7 +379,6 @@ namespace ImageEditor
                 MessageBox.Show($"Lỗi khi lưu ảnh: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
         private void SaveImageToFile(BitmapImage image, string filePath)
         {
             BitmapEncoder encoder;
@@ -348,6 +403,326 @@ namespace ImageEditor
             {
                 encoder.Save(fileStream);
             }
+        }
+
+        // Brightness slider
+        private void SliderBrightness_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+           // khi bấm chuột vào slider 
+        }
+        private void SliderBrightness_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            // khi thả chuột
+        }
+        private void SliderBrightness_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            // khi kéo slider
+            if (SliderBrightness.IsMouseCaptureWithin)
+            {
+                currentBrightness = (int)SliderBrightness.Value;
+                BrightnessValue.Text = $"{currentBrightness}%";
+            }
+        }
+
+        // contrast slider
+        private void SliderContrast_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+        
+        private void SliderContrast_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+        
+        private void SliderContrast_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            // khi kéo slider
+            if (SliderContrast.IsMouseCaptureWithin)
+            {
+                currentContrast = (int)SliderContrast.Value;
+                ContrastValue.Text = $"{currentContrast}%";
+            }
+        }
+
+        // saturation slider
+        private void SliderSaturation_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+
+        private void SliderSaturation_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+
+        private void SliderSaturation_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            // khi kéo slider
+            if (SliderSaturation.IsMouseCaptureWithin)
+            {
+                currentSaturation = (int)SliderSaturation.Value;
+                SaturationValue.Text = $"{currentContrast}%";
+            }
+        }
+
+        // Button apply brightness click
+        private void BtnApplyBrightness_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if(displayImage == null)
+                {
+                    MessageBox.Show("Không có ảnh");
+                    return;
+                }
+                // Thực hiện chỉnh sửa từng cái một
+                BitmapImage adjusted = displayImage;
+                // sáng tối
+                if(currentBrightness != 0)
+                {
+                    adjusted = AdjustBrightness(adjusted, currentBrightness);
+                }
+                // tương phản
+                if(currentContrast != 0)
+                {
+                    adjusted = AdjustContrast(adjusted, currentContrast);
+                }
+                // bão hòa
+                if(currentSaturation != 0)
+                {
+                    adjusted = AdjustSaturation(adjusted, currentSaturation);
+                }
+                // Cập nhật ảnh hiển thị
+                displayImage = adjusted;
+                UpdateDisplayImage(displayImage);
+                UpdateStatusBar();
+
+                MessageBox.Show($"Chỉnh sửa thành công!\n\n" +
+                                $"- Độ sáng: {currentBrightness}%\n" +
+                                $"- Độ tương phản: {currentContrast}%\n"+
+                                $"- Độ bão hòa: {currentSaturation}%",
+                                "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+        }
+
+        // Thực hiện (implementation) : sáng tối
+        // Điều chỉnh độ sáng :
+        // Công thức: NewPixel = OldPixel + Amount
+        private BitmapImage AdjustBrightness(BitmapImage source, int brightnessAmount)
+        {
+            try
+            {
+                WriteableBitmap writeable = new WriteableBitmap(source);
+                writeable.Lock();
+
+                unsafe
+                {
+                    byte* pPixels = (byte*)writeable.BackBuffer;
+                    int stride = writeable.BackBufferStride;
+                    int width = writeable.PixelWidth;
+                    int height = writeable.PixelHeight;
+
+                    for(int y = 0; y < height; y++)
+                    {
+                        int rowOffset = y * stride;
+                        for(int x = 0; x < width; x++)
+                        {
+                            int offset = rowOffset + x * 4;
+                            // bgra format
+                            byte b = pPixels[offset];
+                            byte g = pPixels[offset + 1];
+                            byte r = pPixels[offset + 2];
+                            byte a = pPixels[offset + 3];
+                            // điều chỉnh độ sáng
+                            b = ClampByte(b + brightnessAmount);
+                            g = ClampByte(g + brightnessAmount);
+                            r = ClampByte(r + brightnessAmount);
+                            // ghi lại
+                            pPixels[offset] = b;
+                            pPixels[offset + 1] = g;
+                            pPixels[offset + 2] = r;
+                            pPixels[offset + 3] = a;
+                        }
+                    }
+                }
+                writeable.Unlock();
+                return ConvertWriteableBitmapToImage(writeable);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi điều chỉnh độ sáng: {ex.Message}");
+                return source;
+            }
+        }
+
+        // Điều chỉnh độ tương phản :
+        // Công thức: NewPixel = (OldPixel - 128) * Factor + 128
+        private BitmapImage AdjustContrast(BitmapImage source, int contrastAmount)
+        {
+            try
+            {
+                double factor = (contrastAmount + 100) / 100.0;
+                WriteableBitmap writeable = new WriteableBitmap(source);
+                writeable.Lock();
+
+                unsafe
+                {
+                    byte* pPixels = (byte*)writeable.BackBuffer;
+                    int stride = writeable.BackBufferStride;
+                    int width = writeable.PixelWidth;
+                    int height = writeable.PixelHeight;
+
+                    for (int y = 0; y < height; y++)
+                    {
+                        int rowOffset = y * stride;
+                        for (int x = 0; x < width; x++)
+                        {
+                            int offset = rowOffset + x * 4;
+                            // bgra format
+                            byte b = pPixels[offset];
+                            byte g = pPixels[offset + 1];
+                            byte r = pPixels[offset + 2];
+                            byte a = pPixels[offset + 3];
+                            // điều chỉnh độ sáng
+                            b = ClampByte((int)((b - 128) * factor + 128));
+                            g = ClampByte((int)((g - 128) * factor + 128));
+                            r = ClampByte((int)((r - 128) * factor + 128));
+                            // ghi lại
+                            pPixels[offset] = b;
+                            pPixels[offset + 1] = g;
+                            pPixels[offset + 2] = r;
+                            pPixels[offset + 3] = a;
+                        }
+                    }
+                }
+                writeable.Unlock();
+                return ConvertWriteableBitmapToImage(writeable);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi điều chỉnh độ tương phản: {ex.Message}");
+                return source;
+            }
+        }
+
+        // Điều chỉnh độ bão hòa :
+        // RGB -> HSL -> Điều chỉnh S -> HSL -> RGB
+        private BitmapImage AdjustSaturation(BitmapImage source, int saturationAmount)
+        {
+            try
+            {
+                double factor = (saturationAmount + 100) / 100.0;
+                WriteableBitmap writeable = new WriteableBitmap(source);
+                writeable.Lock();
+
+                unsafe
+                {
+                    byte* pPixels = (byte*)writeable.BackBuffer;
+                    int stride = writeable.BackBufferStride;
+                    int width = writeable.PixelWidth;
+                    int height = writeable.PixelHeight;
+
+                    for (int y = 0; y < height; y++)
+                    {
+                        int rowOffset = y * stride;
+                        for (int x = 0; x < width; x++)
+                        {
+                            int offset = rowOffset + x * 4;
+                            // bgra format
+                            byte b = pPixels[offset];
+                            byte g = pPixels[offset + 1];
+                            byte r = pPixels[offset + 2];
+                            byte a = pPixels[offset + 3];
+                            // chuyển rgb sang hsl
+                            RgbToHsl(r, g, b, out double h, out double s, out double l);
+                            // điều chỉnh bão hòa
+                            s = Math.Min(s * factor, 1.0);
+                            // chuyển lại rgb
+                            HslToRgb(h, s, l, out r, out g, out b);
+                            // ghi lại
+                            pPixels[offset] = b;
+                            pPixels[offset + 1] = g;
+                            pPixels[offset + 2] = r;
+                            pPixels[offset + 3] = a;
+                        }
+                    }
+                }
+                writeable.Unlock();
+                return ConvertWriteableBitmapToImage(writeable);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi điều chỉnh độ tương phản: {ex.Message}");
+                return source;
+            }
+        }
+
+
+        //----------------
+        // Helper functions
+        //----------------
+
+        // đảm bảo giá trị byte nằm trong range 0 - 255
+        private byte ClampByte(int value)
+        {
+            if (value < 0) return 0;
+            if (value > 255) return 255;
+            return (byte)value;
+        }
+
+        // chuyển rgb sang hsl 
+        private void RgbToHsl(byte r, byte g, byte b, out double h, out double s, out double l)
+        {
+            double rNorm = r / 255.0;
+            double gNorm = g / 255.0;
+            double bNorm = b / 255.0;
+            double max = Math.Max(Math.Max(rNorm, gNorm), bNorm);
+            double min = Math.Min(Math.Min(rNorm, gNorm), bNorm);
+            double delta = max - min;
+
+            l = (max + min) / 2.0;
+            if(delta == 0)
+            {
+                s = 0;
+                h = 0;
+            }
+            else
+            {
+                s = l < 0.5 ? delta / (max - min) : delta / (2.0 - max - min);
+                if (max == rNorm)
+                    h = (gNorm - bNorm) / delta + (gNorm < bNorm ? 6 : 0);
+                else if (max == gNorm)
+                    h = (bNorm - rNorm) / delta + 2;
+                else
+                    h = (rNorm - gNorm) / delta + 4;
+                h /= 6.0;
+            }
+        }
+
+        // chuyển hsl sang rgb
+         private void HslToRgb(double h, double s, double l, out byte r, out byte g, out byte b)
+        {
+            double rNorm, gNorm, bNorm;
+            if (s == 0)
+            {
+                rNorm = gNorm = bNorm = l;
+            }
+            else
+            {
+                double q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                double p = 2 * l - q;
+                rNorm = HueToRgb(p, q, h + 1.0 / 3.0);
+                gNorm = HueToRgb(p, q, h);
+                bNorm = HueToRgb(p, q, h + 1.0 / 3.0);
+            }
+            r = (byte)(rNorm * 255);
+            g = (byte)(gNorm * 255);
+            b = (byte)(bNorm * 255);
+        }
+
+        // hsl conversion
+        private double HueToRgb(double p, double q, double t)
+        {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1.0 / 6.0) return p + (q - p) * 6 * t;
+            if (t < 1.0 / 2.0) return q;
+            if (t < 2.0 / 3.0) return p + (q - p) * (2.0 / 3.0 - t) * 6;
+            return p;
         }
 
     }
