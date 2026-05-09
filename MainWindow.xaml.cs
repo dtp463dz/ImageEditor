@@ -479,42 +479,51 @@ namespace ImageEditor
         }
         private void SliderBrightness_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            // khi kéo slider
-            if (SliderBrightness.IsMouseCaptureWithin)
+            try
             {
-                currentBrightness = (int)SliderBrightness.Value;
-                BrightnessValue.Text = $"{currentBrightness}%";
+                // khi kéo slider
+                if (SliderBrightness!= null && SliderBrightness.IsMouseCaptureWithin)
+                {
+                    currentBrightness = (int)SliderBrightness.Value;
+                    if(BrightnessValue != null) BrightnessValue.Text = $"{currentBrightness}%";
+                }
             }
+            catch { }
+            
         }
         // contrast slider
         private void SliderContrast_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
-        
         private void SliderContrast_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
-        
         private void SliderContrast_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            // khi kéo slider
-            if (SliderContrast.IsMouseCaptureWithin)
+            try
             {
-                currentContrast = (int)SliderContrast.Value;
-                ContrastValue.Text = $"{currentContrast}%";
+                // khi kéo slider
+                if (SliderContrast != null && SliderContrast.IsMouseCaptureWithin)
+                {
+                    currentContrast = (int)SliderContrast.Value;
+                    if (ContrastValue != null) ContrastValue.Text = $"{currentContrast}%";
+                }
             }
+            catch { }
         }
 
         // saturation slider
         private void SliderSaturation_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
-
         private void SliderSaturation_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
-
         private void SliderSaturation_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            // khi kéo slider
-            if (SliderSaturation != null && SliderSaturation.IsMouseCaptureWithin)
+            try
             {
-                currentSaturation = (int)SliderSaturation.Value;
-                if(SaturationValue != null)
-                    SaturationValue.Text = $"{currentContrast}%";
+                // khi kéo slider
+                if (SliderSaturation != null && SliderSaturation.IsMouseCaptureWithin)
+                {
+                    currentSaturation = (int)SliderSaturation.Value;
+                    if (SaturationValue != null)
+                        SaturationValue.Text = $"{currentContrast}%";
+                }
             }
+            catch { }
         }
 
         // Button apply brightness click
@@ -547,13 +556,8 @@ namespace ImageEditor
                 // Cập nhật ảnh hiển thị
                 displayImage = adjusted;
                 UpdateDisplayImage(displayImage);
-                UpdateStatusBar();
 
-                MessageBox.Show($"Chỉnh sửa thành công!\n\n" +
-                                $"- Độ sáng: {currentBrightness}%\n" +
-                                $"- Độ tương phản: {currentContrast}%\n"+
-                                $"- Độ bão hòa: {currentSaturation}%",
-                                "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Đã áp dụng!", "Thành công");
             }
             catch(Exception ex)
             {
