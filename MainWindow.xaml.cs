@@ -75,6 +75,21 @@ namespace ImageEditor
             }
         }
 
+        // mix color
+        private void BtnColorMix_Click(object sender, RoutedEventArgs e)
+        {
+            if(displayImage == null)
+            {
+                MessageBox.Show("Vui lòng tải ảnh trước !");
+                return;
+            }
+            TabColorMix.IsSelected = true;
+        }
+        private void BtnResetAdj_Click(object sender, RoutedEventArgs e)
+        {
+            ResetAdjustmentControls();
+        }
+
         // Menu item event handler
         private void MenuItem_OpenImage(object sender, RoutedEventArgs e)
         {
@@ -109,6 +124,17 @@ namespace ImageEditor
         private void MenuItem_ShowBrightnessPanel(object sender, RoutedEventArgs e)
         {
             BtnBrightness_Click(null, null);
+        }
+
+        // menu show color
+        private void MenuItem_ShowColorPanel(object sender, RoutedEventArgs e)
+        {
+            BtnColorMix_Click(null, null);
+        }
+
+        private void MenuItem_ResetAdjustments(object sender, RoutedEventArgs e)
+        {
+            ResetAdjustmentControls();
         }
 
         // Hiển thị ảnh
@@ -206,6 +232,7 @@ namespace ImageEditor
                         DisplayImageSource = null
                     };
                     UpdateStatusBar();
+                    ResetAdjustmentControls();
                     MessageBox.Show($"Ảnh được xóa thành công", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
@@ -342,6 +369,7 @@ namespace ImageEditor
                 displayImage = originalImage;
                 UpdateDisplayImage(displayImage);
                 UpdateStatusBar();
+                ResetAdjustmentControls();
                 MessageBox.Show("Đã quay lại ảnh gốc!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
@@ -423,7 +451,6 @@ namespace ImageEditor
                 BrightnessValue.Text = $"{currentBrightness}%";
             }
         }
-
         // contrast slider
         private void SliderContrast_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
         
@@ -496,6 +523,101 @@ namespace ImageEditor
             {
                 MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
+            }
+        }
+
+        // red slider
+        private void SliderRed_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+        private void SliderRed_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+        private void SliderRed_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (SliderRed.IsMouseCaptureWithin)
+            {
+                currentRed = (int)SliderRed.Value;
+                RedValue.Text = $"{currentRed}%";
+                UpdateColorPreview();
+            }
+        }
+        // green slider
+        private void SliderGreen_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+        private void SliderGreen_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+        private void SliderGreen_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (SliderGreen.IsMouseCaptureWithin)
+            {
+                currentGreen = (int)SliderGreen.Value;
+                GreenValue.Text = $"{currentGreen}%";
+                UpdateColorPreview();
+            }
+        }
+        // blue slider
+        private void SliderBlue_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+        private void SliderBlue_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+        private void SliderBlue_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (SliderBlue.IsMouseCaptureWithin)
+            {
+                currentBlue = (int)SliderBlue.Value;
+                BlueValue.Text = $"{currentBlue}%";
+                UpdateColorPreview();
+            }
+        }
+        // hue slider
+        private void SliderHue_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+        private void SliderHue_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+        private void SliderHue_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (SliderHue.IsMouseCaptureWithin)
+            {
+                currentHue = (int)SliderHue.Value;
+                HueValue.Text = $"{currentHue}°";
+                UpdateColorPreview();
+            }
+        }
+        // Cập nhật xem trước màu sắc
+        private void UpdateColorPreview()
+        {
+            // tính toán màu dựa trên RGB values
+            int red = CalculateColorValue(currentRed);
+            int green = CalculateColorValue(currentGreen);
+            int blue = CalculateColorValue(currentBlue);
+
+            // cập nhật preview color
+            var color = new System.Windows.Media.Color
+            {
+                A = 255,
+                R = (byte)red,
+                G = (byte)green,
+                B = (byte)blue
+            };
+            PreviewColor.Fill = new System.Windows.Media.SolidColorBrush(color);
+            PreviewHex.Text = color.ToString();
+        }
+        // Tính giá trị màu từ phần trăm (-100 đến 100)
+        private int CalculateColorValue(int percentage)
+        {
+            // -100 = 0, 0 = 128, +100 = 255
+            int value = (int)(128 + (percentage * 1.28));
+            if (value < 0) value = 0;
+            if (value > 255) value = 255;
+            return value;
+        }
+
+        // button apply color
+        private void BtnApplyColor_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (displayImage == null)
+                {
+                    MessageBox.Show("Không có ảnh để thực hiện");
+                    return;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -651,6 +773,110 @@ namespace ImageEditor
             }
         }
 
+        // Thực hiện (implementation) : color mix
+        // Điều chỉnh từng kênh màu (red, green, blue)
+        // Công thức: NewChannel = OldChannel * Factor
+        private BitmapImage AdjustColorChannels(BitmapImage source, int redAmount, int greenAmount, int blueAmount)
+        {
+            try
+            {
+                double redFactor = (redAmount + 100) / 100.0;
+                double greenFactor = (greenAmount + 100) / 100.0;
+                double blueFactor = (blueAmount + 100) / 100.0;
+                WriteableBitmap writeable = new WriteableBitmap(source);
+                writeable.Lock();
+                unsafe
+                {
+                    byte* pPixels = (byte*)writeable.BackBuffer;
+                    int stride = writeable.BackBufferStride;
+                    int width = writeable.PixelWidth;
+                    int height = writeable.PixelHeight;
+
+                    for(int y = 0; y < height; y++)
+                    {
+                        int rowOffset = y * stride;
+                        for(int x = 0; x < width; x++)
+                        {
+                            int offset = rowOffset + x * 4;
+                            byte b = pPixels[offset];
+                            byte g = pPixels[offset + 1];
+                            byte r = pPixels[offset + 2];
+                            byte a = pPixels[offset + 3];
+
+                            // Điều chỉnh từng channel
+                            b = ClampByte((int)(b * blueFactor));
+                            g = ClampByte((int)(g * greenFactor));
+                            r = ClampByte((int)(r * redFactor));
+
+                            pPixels[offset] = b;
+                            pPixels[offset + 1] = g;
+                            pPixels[offset + 2] = r;
+                            pPixels[offset + 3] = a;
+                        }
+                    }
+                }
+                writeable.Unlock();
+                return ConvertWriteableBitmapToImage(writeable);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi điều chỉnh màu: {ex.Message}");
+                return source;
+            }
+        }
+
+        // xoay sắc độ (hue shift)
+        // RGB -> HSL -> Rotate H -> HSL ->RGB
+        private BitmapImage AdjustHueShift(BitmapImage source, int hueShift)
+        {
+            try
+            {
+                double hueShiftNorm = hueShift  / 180.0;
+                WriteableBitmap writeable = new WriteableBitmap(source);
+                writeable.Lock();
+                unsafe
+                {
+                    byte* pPixels = (byte*)writeable.BackBuffer;
+                    int stride = writeable.BackBufferStride;
+                    int width = writeable.PixelWidth;
+                    int height = writeable.PixelHeight;
+
+                    for (int y = 0; y < height; y++)
+                    {
+                        int rowOffset = y * stride;
+                        for (int x = 0; x < width; x++)
+                        {
+                            int offset = rowOffset + x * 4;
+                            byte b = pPixels[offset];
+                            byte g = pPixels[offset + 1];
+                            byte r = pPixels[offset + 2];
+                            byte a = pPixels[offset + 3];
+
+                            // Chuyển RGB -> HSL
+                            RgbToHsl(r, g, b, out double h, out double s, out double l);
+                            // Xoay hue
+                            h += hueShiftNorm;
+                            if (h > 1.0) h -= 1.0;
+                            if (h < 0) h += 1.0;
+                            // chuyển lại rgb
+                            HslToRgb(h, s, l, out r, out g, out b);
+
+                            pPixels[offset] = b;
+                            pPixels[offset + 1] = g;
+                            pPixels[offset + 2] = r;
+                            pPixels[offset + 3] = a;
+                        }
+                    }
+                }
+                writeable.Unlock();
+                return ConvertWriteableBitmapToImage(writeable);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi điều chỉnh màu: {ex.Message}");
+                return source;
+            }
+        }
 
         //----------------
         // Helper functions
@@ -725,6 +951,37 @@ namespace ImageEditor
             return p;
         }
 
+        // reset tất cả các control chỉnh sửa
+        private void ResetAdjustmentControls()
+        {
+            currentBrightness = 0;
+            currentContrast = 0;
+            currentSaturation = 0;
+            SliderBrightness.Value = 0;
+            SliderContrast.Value = 0;
+            SliderSaturation.Value = 0;
+            BrightnessValue.Text = "0%";
+            ContrastValue.Text = "0%";
+            SaturationValue.Text = "0%";
+
+            // Color channels
+            currentRed = 0;
+            currentGreen = 0;
+            currentBlue = 0;
+            currentHue = 0;
+
+            SliderRed.Value = 0;
+            SliderGreen.Value = 0;
+            SliderBlue.Value = 0;
+            SliderHue.Value = 0;
+
+            RedValue.Text = "0%";
+            GreenValue.Text = "0%";
+            BlueValue.Text = "0%";
+            HueValue.Text = "0°";
+
+            UpdateColorPreview();
+        }
     }
     // Viewmodel : dùng cho data binding
     public class ImageViewModel

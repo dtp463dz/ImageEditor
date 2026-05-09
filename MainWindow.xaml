@@ -4,7 +4,7 @@
         xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="#121212"
-        Title="Visionary Editor Pro" Height="900" Width="1400">
+        Title="Visionary Editor Pro" Height="1000" Width="1500">
 
     <Window.Resources>
         <!-- ĐỊNH NGHĨA NỀN CARO (TRANSPARENCY BACKGROUND) -->
@@ -45,6 +45,10 @@
                 <Separator/>
                 <MenuItem Header="Cắt (Px)" Foreground="White" Click="MenuItem_CropImage"/>
                 <MenuItem Header="Cắt (%)" Foreground="White" Click="MenuItem_CropPercentImage"/>
+                <Separator/>
+                <MenuItem Header="Độ sáng" Click="MenuItem_ShowBrightnessPanel"/>
+                <MenuItem Header="Màu ảnh" Click="MenuItem_ShowColorPanel"/>
+                <MenuItem Header="Reset" Click="MenuItem_ResetAdjustments"/>
             </MenuItem>
             
             <MenuItem Header="Hình ảnh" Foreground="White"/>
@@ -58,10 +62,10 @@
 
         <!-- 2. SUB-TOP TOOL PROPERTIES -->
         <Border DockPanel.Dock="Top" Background="#252525" Height="60" BorderBrush="#121212" BorderThickness="0,1,0,1">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                 <Button Name="BtnOpenImage"
                         Style="{StaticResource MaterialDesignFlatButton}" 
-                        Foreground="White" Height="30" Padding="15,0"
+                        Foreground="White" Height="35" Padding="15,0"
                         Click="BtnOpenImage_Click">
                     
                     <StackPanel Orientation="Horizontal">
@@ -109,6 +113,38 @@
                         <TextBlock Text="Lưu ảnh" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
+
+                <Separator Margin="10,8" Background="#444444"/>
+                <Button Name="BtnBrightness"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" Height="35"
+                        Padding="15,0"
+                        Click="BtnBrightness_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <md:PackIcon Kind="Brightness6" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Sáng tối" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Name="BtnColorMix"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White"
+                        Height="35" Padding="15,0"
+                        Click="BtnColorMix_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <md:PackIcon Kind="Palette" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Màu sắc" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Name="BtnResetAdj"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White"
+                        Height="35" Padding="15,0"
+                        Click="BtnResetAdj_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <md:PackIcon Kind="RefreshCircle" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Quay lại" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </Border>
 
@@ -141,69 +177,201 @@
         </Border>
 
         <!-- 4. RIGHT SIDE PANELS -->
-        <Border DockPanel.Dock="Right" Width="280" Background="#1E1E1E" BorderBrush="#121212" BorderThickness="1,0,0,0">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <!-- Navigator -->
-                    <RowDefinition Height="*"/>
-                    <!-- Layers -->
-                    <RowDefinition Height="250"/>
-                    <!-- History -->
-                </Grid.RowDefinitions>
-
-                <!-- Navigator Section -->
-                <Expander Header="Điều hướng" IsExpanded="True" Grid.Row="0" Foreground="White" md:ExpanderAssist.HeaderBackground="#252525">
-                    <StackPanel Margin="5">
-                        <Border Height="120" Background="{StaticResource CheckerboardBrush}" BorderBrush="#333" BorderThickness="1">
-                            <!-- Ảnh nhỏ preview ở đây -->
-                            <Image Source="{Binding ImagePreview}" Stretch="Uniform"/>
-                        </Border>
-                        <Grid Margin="0,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="-" Grid.Column="0" Foreground="White" VerticalAlignment="Center"/>
-                            <Slider Grid.Column="1" Minimum="10" Maximum="200" Value="44" Margin="10,0"/>
-                            <TextBlock Text="+" Grid.Column="2" Foreground="White" VerticalAlignment="Center"/>
-                            <TextBlock Text="44%" Grid.Column="3" Foreground="White" Margin="10,0,0,0" VerticalAlignment="Center"/>
-                        </Grid>
-                    </StackPanel>
-                </Expander>
-
-                <!-- Layers Section -->
-                <Expander Header="Các layer" IsExpanded="True" Grid.Row="1" Foreground="White" md:ExpanderAssist.HeaderBackground="#252525">
+        <Border DockPanel.Dock="Right" Width="320" Background="#1E1E1E" BorderBrush="#121212" BorderThickness="1,0,0,0">
+            <TabControl Name="MainTabControl" Background="#1E1E1E" Foreground="White">
+                <TabItem Header="Lớp &amp; Lịch sử" Background="#252525" Foreground="White">
                     <Grid>
-                        <ListBox Background="Transparent" BorderThickness="0">
-                            <!-- Layer items go here -->
-                        </ListBox>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="5">
-                            <Button Style="{StaticResource MaterialDesignIconButton}" Width="30" Height="30">
-                                <md:PackIcon Kind="Plus" Foreground="Gray"/>
-                            </Button>
-                            <Button Style="{StaticResource MaterialDesignIconButton}" Width="30" Height="30">
-                                <md:PackIcon Kind="DeleteOutline" Foreground="Gray"/>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="250"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Layer Section -->
+                        <Expander Header="Các layer" IsExpanded="True" Grid.Row="0" Foreground="White" md:ExpanderAssist.HeaderBackground="#252525">
+                            <Grid>
+                                <ListBox Background="Transparent" BorderThickness="0"> 
+                                </ListBox>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="5">
+                                    <Button Style="{StaticResource MaterialDesignIconButton}" Width="30" Height="30">
+                                        <md:PackIcon Kind="Plus" Foreground="Gray"/>
+                                    </Button>
+                                    <Button Style="{StaticResource MaterialDesignIconButton}" Width="30" Height="30">
+                                        <md:PackIcon Kind="DeleteOutline" Foreground="Gray"/>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Expander>
+
+                        <!-- History Section -->
+                        <Expander Header="Lịch sử" IsExpanded="True" Grid.Row="1" Foreground="White" md:ExpanderAssist.HeaderBackground="#252525">
+                            <ListBox Background="Transparent" BorderThickness="0">
+                                <ListBoxItem Background="#00897B" Foreground="White">
+                                    <DockPanel LastChildFill="True">
+                                        <md:PackIcon Kind="FileImageOutline" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Xóa ảnh" Margin="10,0" VerticalAlignment="Center"/>
+                                        <md:PackIcon Kind="DeleteOutline" HorizontalAlignment="Right"/>
+                                    </DockPanel>
+                                </ListBoxItem>
+                            </ListBox>
+                        </Expander>
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Sáng tối" Background="#252525" Name="TabBrightness" Foreground="White">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="10">
+                            <TextBlock Text="Sáng Tối" FontSize="14" FontWeight="Bold" Foreground="White"/>
+                            <!--Sang toi-->
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Độ sáng: " Foreground="White" Width="80"/>
+                                    <TextBlock Name="BrightnessValue" Text="0%" Foreground="#00897B" TextAlignment="Right" Width="60"/>
+                                </StackPanel>
+                                <Slider Name="SliderBrightness"
+                                        Minimum="-100" Maximum="100" Value="0"
+                                        Background="#252525" Foreground="#00897B"
+                                        PreviewMouseLeftButtonDown="SliderBrightness_PreviewMouseLeftButtonDown"
+                                        PreviewMouseLeftButtonUp="SliderBrightness_PreviewMouseLeftButtonUp"
+                                        PreviewMouseMove="SliderBrightness_PreviewMouseMove"/>
+                                <TextBlock Text="Tối ← → Sáng" Foreground="#888888" FontSize="11" TextAlignment="Center"/>
+                            </StackPanel>
+                            <Separator Background="#333333"/>
+                            <!--tuong phan-->
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Độ tương phản: " Foreground="White" Width="80"/>
+                                    <TextBlock Name="ContrastValue" Text="0%" Foreground="#00897B" TextAlignment="Right" Width="60"/>
+                                </StackPanel>
+                                <Slider Name="SliderContrast"
+                                        Minimum="-100" Maximum="100" Value="0"
+                                        PreviewMouseLeftButtonDown="SliderBrightness_PreviewMouseLeftButtonDown"
+                                        PreviewMouseLeftButtonUp="SliderBrightness_PreviewMouseLeftButtonUp"
+                                        PreviewMouseMove="SliderBrightness_PreviewMouseMove"
+                                        Background="#252525" Foreground="#00897B"/>
+                                <TextBlock Text="Mềm ← → Sắc nét" Foreground="#888888" FontSize="11" TextAlignment="Center"/>
+                            </StackPanel>
+                            <Separator Background="#333333"/>
+
+                            <!--bao hoa-->
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Bão hòa: " Foreground="White" Width="80"/>
+                                    <TextBlock Name="SaturationValue" Text="0%" Foreground="#00897B" TextAlignment="Right" Width="60"/>
+                                </StackPanel>
+                                <Slider Name="SliderSaturation"
+                                        Minimum="-100" Maximum="100" Value="0"
+                                        PreviewMouseLeftButtonDown="SliderBrightness_PreviewMouseLeftButtonDown"
+                                        PreviewMouseLeftButtonUp="SliderBrightness_PreviewMouseLeftButtonUp"
+                                        PreviewMouseMove="SliderBrightness_PreviewMouseMove"
+                                        Background="#252525" Foreground="#00897B"/>
+                                <TextBlock Text="Trắng đen ← → Rực rỡ" Foreground="#888888" FontSize="11" TextAlignment="Center"/>
+                            </StackPanel>
+
+                            <!--Button apply-->
+                            <Button Name="BtnApplyBrightness"
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Foreground="White"
+                                    Background="#00897B"
+                                    Click="BtnApplyBrightness_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <md:PackIcon Kind="Check" Margin="0,0,5,0"/>
+                                    <TextBlock Text="Áp dụng"/>
+                                </StackPanel>
                             </Button>
                         </StackPanel>
-                    </Grid>
-                </Expander>
+                    </ScrollViewer>
+                </TabItem>
 
-                <!-- History Section -->
-                <Expander Header="Lịch sử" IsExpanded="True" Grid.Row="2" Foreground="White" md:ExpanderAssist.HeaderBackground="#252525">
-                    <ListBox Background="Transparent" BorderThickness="0">
-                        <ListBoxItem Background="#00897B" Foreground="White">
-                            <DockPanel LastChildFill="True">
-                                <md:PackIcon Kind="FileImageOutline" VerticalAlignment="Center"/>
-                                <TextBlock Text="Xóa ảnh" Margin="10,0" VerticalAlignment="Center"/>
-                                <md:PackIcon Kind="DeleteOutline" HorizontalAlignment="Right"/>
-                            </DockPanel>
-                        </ListBoxItem>
-                    </ListBox>
-                </Expander>
-            </Grid>
+                <!--Item màu sắc-->
+                <TabItem Header="Màu sắc" Background="#252525" Name="TabColorMix" Foreground="White">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="10">
+                            <TextBlock Text="Color Mix - Trộn màu" FontSize="14" FontWeight="Bold" Foreground="White"/>
+                            <!--Red-->
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Rectangle Fill="Red" Width="20" Height="20" Margin="0,0,10,0"/>
+                                    <TextBlock Text="Đỏ: " Foreground="White" Width="60"/>
+                                    <TextBlock Name="RedValue" Text="0%" Foreground="#FF6B6B" TextAlignment="Right" Width="60"/>
+                                </StackPanel>
+                                <Slider Name="SliderRed"
+                                        Minimum="-100" Maximum="100" Value="0"
+                                        PreviewMouseLeftButtonDown="SliderRed_PreviewMouseLeftButtonDown"
+                                        PreviewMouseLeftButtonUp="SliderRed_PreviewMouseLeftButtonUp"
+                                        PreviewMouseMove="SliderRed_PreviewMouseMove"
+                                        Background="#252525" Foreground="#FF6B6B"
+                                        />
+                            </StackPanel>
+                            <!--Green-->
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Rectangle Fill="Lime" Width="20" Height="20" Margin="0,0,10,0"/>
+                                    <TextBlock Text="Xanh lá: " Foreground="White" Width="60"/>
+                                    <TextBlock Name="GreenValue" Text="0%" Foreground="#51CF66" TextAlignment="Right" Width="60"/>
+                                </StackPanel>
+                                <Slider Name="SliderGreen"
+                                        Minimum="-100" Maximum="100" Value="0"
+                                        PreviewMouseLeftButtonDown="SliderGreen_PreviewMouseLeftButtonDown"
+                                        PreviewMouseLeftButtonUp="SliderGreen_PreviewMouseLeftButtonUp"
+                                        PreviewMouseMove="SliderGreen_PreviewMouseMove"
+                                        Background="#252525" Foreground="#51CF66"
+                                        />
+                            </StackPanel>
+                               <!--Blue-->
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Rectangle Fill="Blue" Width="20" Height="20" Margin="0,0,10,0"/>
+                                    <TextBlock Text="Xanh dương: " Foreground="White" Width="60"/>
+                                    <TextBlock Name="BlueValue" Text="0%" Foreground="#4DABF7" TextAlignment="Right" Width="60"/>
+                                </StackPanel>
+                                <Slider Name="SliderBlue"
+                                        Minimum="-100" Maximum="100" Value="0"
+                                        PreviewMouseLeftButtonDown="SliderBlue_PreviewMouseLeftButtonDown"
+                                        PreviewMouseLeftButtonUp="SliderBlue_PreviewMouseLeftButtonUp"
+                                        PreviewMouseMove="SliderBlue_PreviewMouseMove"
+                                        Background="#252525" Foreground="#4DABF7"
+                                        />
+                            </StackPanel>
+                            
+                            <Separator Background="#333333"/>
+                            <!--Xoay sắc độ-->
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <md:PackIcon Kind="Palette" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                    <TextBlock Text="Tông màu: " Foreground="White" Width="60"/>
+                                    <TextBlock Name="HueValue" Text="0%" Foreground="#00897B" TextAlignment="Right" Width="60"/>
+                                </StackPanel>
+                                <Slider Name="SliderHue"
+                                        Minimum="-180" Maximum="180" Value="0"
+                                        PreviewMouseLeftButtonDown="SliderHue_PreviewMouseLeftButtonDown"
+                                        PreviewMouseLeftButtonUp="SliderHue_PreviewMouseLeftButtonUp"
+                                        PreviewMouseMove="SliderHue_PreviewMouseMove"
+                                        Background="#252525" Foreground="#4DABF7"
+                                        />
+                            </StackPanel>
+                            
+                            <Separator Background="#333333"/>
+                            <!--Preview color-->
+                            <TextBlock Text="Xem trước màu: " Foreground="White" FontSize="12"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Name="PreviewColor" Fill="#808080" Width="100" Height="60" RadiusX="5" RadiusY="5"/>
+                                <TextBlock Name="PreviewHex" Text="#808080" Foreground="White" VerticalAlignment="Center" FontSize="14"/>
+                            </StackPanel>
+
+                            <Button Name="BtnApplyColor"
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Foreground="White"
+                                    Background="#00897B"
+                                    Click="BtnApplyColor_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <md:PackIcon Kind="Check" Margin="0,0,5,0"/>
+                                    <TextBlock Text="Áp dụng"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+            </TabControl>
         </Border>
 
         <!-- 5. MAIN CANVAS AREA -->
