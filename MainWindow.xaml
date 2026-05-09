@@ -49,8 +49,13 @@
                 <MenuItem Header="Màu ảnh" Click="MenuItem_ShowColorPanel"/>
                 <MenuItem Header="Reset" Click="MenuItem_ResetAdjustments"/>
             </MenuItem>
-            
-            <MenuItem Header="Hình ảnh" Foreground="White"/>
+            <MenuItem Header="Hình ảnh" Foreground="White">
+                <MenuItem Header="Xoay ảnh" Click="MenuItem_RotageImage"/>
+                <Separator/>
+                <MenuItem Header="Lật dọc" Click="MenuItem_FlopHorizontalImage"/>
+                <Separator/>
+                <MenuItem Header="Lật ngang" Click="MenuItem_FlopVerticalImage"/>
+            </MenuItem>
             <MenuItem Header="Lớp" Foreground="White"/>
             <MenuItem Header="Chọn" Foreground="White"/>
             <MenuItem Header="Di chuyển" Foreground="White"/>
@@ -90,7 +95,15 @@
                         <TextBlock Text="Cắt ảnh" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
-                <Separator Margin="10,8" Background="#444444"/>
+                <Button Name="BtnRotageImage"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" Height="35" Padding="15,0"
+                        Click="BtnRotageImage_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <md:PackIcon Kind="ScreenRotation " Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Xoay ảnh" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
 
                 <Button Name="BtnReset"
                         Style="{StaticResource MaterialDesignFlatButton}"

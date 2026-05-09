@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using System.IO;
 using Microsoft.Win32;
+using System.Windows.Media;
 
 namespace ImageEditor
 {
@@ -20,12 +21,10 @@ namespace ImageEditor
         private int currentBrightness = 0;
         private int currentContrast = 0;
         private int currentSaturation = 0;
-        
         private int currentRed = 0;
         private int currentGreen = 0;
         private int currentBlue = 0;
         private int currentHue = 0;
-
         public MainWindow()
         {
             try
@@ -39,7 +38,6 @@ namespace ImageEditor
                 MessageBox.Show($"Init error: {ex.Message}\n{ex.StackTrace}", "Error");
             }
         }
-
         // Event handler từ giao diện
         private void BtnOpenImage_Click(object sender, RoutedEventArgs e)
         {
@@ -61,7 +59,6 @@ namespace ImageEditor
         {
             ResetToOriginal();
         }
-
         // chỉnh sửa sáng tối
         private void BtnBrightness_Click(object sender, RoutedEventArgs e)
         {
@@ -82,7 +79,6 @@ namespace ImageEditor
                 MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi");
             }
         }
-
         // mix color
         private void BtnColorMix_Click(object sender, RoutedEventArgs e)
         {
@@ -107,7 +103,11 @@ namespace ImageEditor
         {
             ResetAdjustmentControls();
         }
-
+        // xoay ảnh
+        private void BtnRotageImage_Click(object sender, RoutedEventArgs e)
+        {
+            RotageImage();
+        }
         // Menu item event handler
         private void MenuItem_OpenImage(object sender, RoutedEventArgs e)
         {
@@ -137,24 +137,34 @@ namespace ImageEditor
         {
             ResetToOriginal();
         }
-
         // menu sáng tối
         private void MenuItem_ShowBrightnessPanel(object sender, RoutedEventArgs e)
         {
             BtnBrightness_Click(null, null);
         }
-
         // menu show color
         private void MenuItem_ShowColorPanel(object sender, RoutedEventArgs e)
         {
             BtnColorMix_Click(null, null);
         }
-
         private void MenuItem_ResetAdjustments(object sender, RoutedEventArgs e)
         {
             ResetAdjustmentControls();
         }
-
+        // xoay ảnh
+        private void MenuItem_RotageImage(object sender, RoutedEventArgs e)
+        {
+            RotageImage();
+        }
+        // lật ảnh
+        private void MenuItem_FlopHorizontalImage(object sender, RoutedEventArgs e)
+        {
+            FlipImage(isHorizontal: true);
+        }
+        private void MenuItem_FlopVerticalImage(object sender, RoutedEventArgs e)
+        {
+            FlipImage(isHorizontal: false);
+        }
         // Hiển thị ảnh
         public void LoadImage()
         {
@@ -309,7 +319,7 @@ namespace ImageEditor
                     displayImage,
                     new Int32Rect(x, y, width, height)
                 );
-                BitmapImage croppedImage = ConvertCroppedBitmapToImage(croppedBitmap);
+                BitmapImage croppedImage = ConvertBitmapSourceToBitmapImage(croppedBitmap);
 
                 // cập nhật ảnh sau khi được chuyển đổi
                 displayImage = croppedImage;
@@ -331,14 +341,14 @@ namespace ImageEditor
         }
 
         // hàm chuyển đổi CroppedBitmap sang BitmapImage (chuyển từ ảnh cắt sang ảnh hiển thị ở UI)
-        private BitmapImage ConvertCroppedBitmapToImage(CroppedBitmap croppedBitmap)
+        private BitmapImage ConvertBitmapSourceToBitmapImage(BitmapSource bitmapSource)
         {
             BitmapImage image = new BitmapImage();
             // Tạo bộ nhớ ram
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 PngBitmapEncoder encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(croppedBitmap));
+                encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
                 encoder.Save(memoryStream);
                 memoryStream.Seek(0, SeekOrigin.Begin);
                 image.BeginInit();
@@ -413,7 +423,6 @@ namespace ImageEditor
                 MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi");
             }
         }
-
         // Lưu ảnh hiện tại vào file
         public void SaveImage()
         {
@@ -525,7 +534,6 @@ namespace ImageEditor
             }
             catch { }
         }
-
         // Button apply brightness click
         private void BtnApplyBrightness_Click(object sender, RoutedEventArgs e)
         {
@@ -947,6 +955,67 @@ namespace ImageEditor
             {
                 MessageBox.Show($"Lỗi điều chỉnh màu: {ex.Message}");
                 return source;
+            }
+        }
+        // Rotage Image
+        private void RotageImage()
+        {
+            try
+            {
+                if(displayImage == null)
+                {
+                    MessageBox.Show("Không có ảnh để thực hiện", "Thông báo");
+                    return;
+                }
+                // sử dụng TransformesBitmap
+                TransformedBitmap rotatedBitmap = new TransformedBitmap();
+                rotatedBitmap.BeginInit();
+                rotatedBitmap.Source = displayImage;
+                // Mỗi lần gọi hàm sẽ xoay thêm 90 độ so với ảnh hiện tại
+                rotatedBitmap.Transform = new RotateTransform(90);
+                rotatedBitmap.EndInit();
+                rotatedBitmap.Freeze();
+                BitmapImage finalImage = ConvertBitmapSourceToBitmapImage(rotatedBitmap);
+                // hiển thị
+                displayImage = finalImage;
+                UpdateDisplayImage(displayImage);
+                UpdateStatusBar();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi xoay ảnh: {ex.Message}", "Lỗi");
+            }
+        }
+        // Flip Image
+        private void FlipImage(bool isHorizontal)
+        {
+            try
+            {
+                if(displayImage == null)
+                {
+                    MessageBox.Show("Không có ảnh để thực hiện", "Thông báo");
+                    return;
+                }
+                // khởi tạo
+                TransformedBitmap flippedBitmap = new TransformedBitmap();
+                flippedBitmap.BeginInit();
+                flippedBitmap.Source = displayImage;
+                // logic lật ảnh bằng ScaleTransform
+                // ScaleX = -1: Lật ngang, ScaleY = -1: Lật dọc
+                if (isHorizontal)
+                    flippedBitmap.Transform = new ScaleTransform(-1, 1, 0.5, 0.5);
+                else
+                    flippedBitmap.Transform = new ScaleTransform(1, -1, 0.5, 0.5);
+                flippedBitmap.EndInit();
+                flippedBitmap.Freeze();
+                // chuyển đổi và cập nhật UI
+                displayImage = ConvertBitmapSourceToBitmapImage(flippedBitmap);
+                UpdateDisplayImage(displayImage);
+                UpdateStatusBar();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi lật ảnh: {ex.Message}", "Lỗi");
             }
         }
 
