@@ -61,7 +61,7 @@
         </Menu>
 
         <!-- 2. SUB-TOP TOOL PROPERTIES -->
-        <Border DockPanel.Dock="Top" Background="#252525" Height="60" BorderBrush="#121212" BorderThickness="0,1,0,1">
+        <Border DockPanel.Dock="Top" Background="#252525" Height="70" BorderBrush="#121212" BorderThickness="0,1,0,1">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                 <Button Name="BtnOpenImage"
                         Style="{StaticResource MaterialDesignFlatButton}" 
@@ -179,7 +179,7 @@
         <!-- 4. RIGHT SIDE PANELS -->
         <Border DockPanel.Dock="Right" Width="320" Background="#1E1E1E" BorderBrush="#121212" BorderThickness="1,0,0,0">
             <TabControl Name="MainTabControl" Background="#1E1E1E" Foreground="White">
-                <TabItem Header="Lớp &amp; Lịch sử" Background="#252525" Foreground="White">
+                <TabItem Header="Layers" Background="#252525" Foreground="White">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -187,10 +187,9 @@
                         </Grid.RowDefinitions>
 
                         <!-- Layer Section -->
-                        <Expander Header="Các layer" IsExpanded="True" Grid.Row="0" Foreground="White" md:ExpanderAssist.HeaderBackground="#252525">
+                        <Expander Header="Layers" IsExpanded="True" Grid.Row="0" Foreground="White" md:ExpanderAssist.HeaderBackground="#252525">
                             <Grid>
-                                <ListBox Background="Transparent" BorderThickness="0"> 
-                                </ListBox>
+                                <ListBox Background="Transparent" BorderThickness="0"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="5">
                                     <Button Style="{StaticResource MaterialDesignIconButton}" Width="30" Height="30">
                                         <md:PackIcon Kind="Plus" Foreground="Gray"/>
@@ -208,7 +207,7 @@
                                 <ListBoxItem Background="#00897B" Foreground="White">
                                     <DockPanel LastChildFill="True">
                                         <md:PackIcon Kind="FileImageOutline" VerticalAlignment="Center"/>
-                                        <TextBlock Text="Xóa ảnh" Margin="10,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Mở ảnh" Margin="10,0" VerticalAlignment="Center"/>
                                         <md:PackIcon Kind="DeleteOutline" HorizontalAlignment="Right"/>
                                     </DockPanel>
                                 </ListBoxItem>
