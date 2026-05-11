@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ImageEditor.ViewModels
+namespace ImageEditor.Modelss
 {
-    class MainViewModel
+    class ColorAdjuster
     {
     }
 }

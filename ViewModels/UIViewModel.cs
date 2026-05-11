@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ImageEditor.Services
+namespace ImageEditor.ViewModels
 {
-    class ImageProcessingService
+    class UIViewModel
     {
     }
 }

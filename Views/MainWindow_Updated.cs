@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ImageEditor.ViewModels
+namespace ImageEditor.Views
 {
-    class BaseViewModel
+    class MainWindow_Updated
     {
     }
 }
