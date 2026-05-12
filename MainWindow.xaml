@@ -50,8 +50,6 @@
                 <MenuItem Header="Reset" Click="MenuItem_ResetAdjustments"/>
             </MenuItem>
             <MenuItem Header="Hình ảnh" Foreground="White">
-                <MenuItem Header="Xoay ảnh" Click="MenuItem_RotageImage"/>
-                <Separator/>
                 <MenuItem Header="Lật dọc" Click="MenuItem_FlopHorizontalImage"/>
                 <Separator/>
                 <MenuItem Header="Lật ngang" Click="MenuItem_FlopVerticalImage"/>
@@ -95,13 +93,32 @@
                         <TextBlock Text="Cắt ảnh" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
-                <Button Name="BtnRotageImage"
+
+                <Button Name="BtnRotate90"
                         Style="{StaticResource MaterialDesignFlatButton}"
                         Foreground="White" Height="35" Padding="15,0"
-                        Click="BtnRotageImage_Click">
+                        Click="BtnRotate90_Click">
                     <StackPanel Orientation="Horizontal">
-                        <md:PackIcon Kind="ScreenRotation " Margin="0,0,5,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Xoay ảnh" VerticalAlignment="Center"/>
+                        <md:PackIcon Kind="RotateRight" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Xoay 90°" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Name="BtnRotate180"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" Height="35" Padding="15,0"
+                        Click="BtnRotate180_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <md:PackIcon Kind="RotateRight" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Xoay 180°" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Name="BtnRotate270"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" Height="35" Padding="15,0"
+                        Click="BtnRotate270_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <md:PackIcon Kind="RotateLeft" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Xoay 270°" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
 

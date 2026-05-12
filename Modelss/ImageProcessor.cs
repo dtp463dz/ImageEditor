@@ -24,9 +24,7 @@ namespace ImageEditor.Modelss
                 // hiển thị dialog
                 if (openFileDialog.ShowDialog() == true)
                 {
-                    string imagePath = openFileDialog.FileName;
-                    // đọc ảnh từ file
-                    LoadImageFromPath(imagePath);
+                    return LoadImageFromPath(openFileDialog.FileName);
                 }
             }
             catch (Exception ex)

@@ -28,7 +28,7 @@ namespace ImageEditor
             try
             {
                 InitializeComponent();
-                this.DataContext = new ImageViewModel { DisplayImageSource = null };
+                this.DataContext = new UIViewModel();
                 UpdateStatusBar();
             }
             catch (Exception ex)
@@ -204,17 +204,13 @@ namespace ImageEditor
         {
             try
             {
-                if(StatusText != null)
-                {
-                    if (displayImage != null)
-                        StatusText.Text = $"{displayImage.PixelWidth} x {displayImage.PixelHeight} px";
-                    else
-                        StatusText.Text = "Chưa tải ảnh";
-                }
+                StatusText.Text = displayImage != null ? $"{displayImage.PixelWidth} x {displayImage.PixelHeight}" : "Không có ảnh";
             }
             catch { }
         }
         // Brightness slider
+        private void SliderBrightness_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+        private void SliderBrightness_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
         private void SliderBrightness_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             try
@@ -229,6 +225,8 @@ namespace ImageEditor
             catch { }
         }
         // contrast slider
+        private void SliderContrast_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+        private void SliderContrast_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
         private void SliderContrast_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             try
@@ -243,6 +241,8 @@ namespace ImageEditor
             catch { }
         }
         // saturation slider
+        private void SliderSaturation_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+        private void SliderSaturation_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
         private void SliderSaturation_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             try
@@ -290,6 +290,8 @@ namespace ImageEditor
             }
         }
         // red slider
+        private void SliderRed_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+        private void SliderRed_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
         private void SliderRed_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             try
@@ -304,6 +306,8 @@ namespace ImageEditor
             catch { }
         }
         // green slider
+        private void SliderGreen_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+        private void SliderGreen_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
         private void SliderGreen_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             try
@@ -319,6 +323,8 @@ namespace ImageEditor
             
         }
         // blue slider
+        private void SliderBlue_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+        private void SliderBlue_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
         private void SliderBlue_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             try
@@ -333,6 +339,8 @@ namespace ImageEditor
             catch {}
         }
         // hue slider
+        private void SliderHue_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
+        private void SliderHue_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) { }
         private void SliderHue_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             try
@@ -447,7 +455,7 @@ namespace ImageEditor
         {
             try
             {
-                if(this.DataContext is UIViewModel vm && displayImage != null)
+                if (this.DataContext is UIViewModel vm && displayImage != null)
                 {
                     vm.DisplayImageSource = displayImage;
                 }
