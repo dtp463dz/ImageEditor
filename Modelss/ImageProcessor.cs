@@ -144,6 +144,36 @@ namespace ImageEditor.Modelss
                 throw new Exception($"Lỗi khi xoay ảnh: {ex.Message}");
             }
         }
+
+        // Flip Image
+        public static BitmapImage FlipImage(BitmapImage source, bool isHorizontal)
+        {
+            try
+            {
+                if (source == null)
+                    throw new Exception("Không có ảnh để thực hiện");
+
+                // khởi tạo
+                TransformedBitmap flippedBitmap = new TransformedBitmap();
+                flippedBitmap.BeginInit();
+                flippedBitmap.Source = source;
+                // logic lật ảnh bằng ScaleTransform
+                // ScaleX = -1: Lật ngang, ScaleY = -1: Lật dọc
+                if (isHorizontal)
+                    flippedBitmap.Transform = new ScaleTransform(-1, 1, 0.5, 0.5);
+                else
+                    flippedBitmap.Transform = new ScaleTransform(1, -1, 0.5, 0.5);
+                flippedBitmap.EndInit();
+                flippedBitmap.Freeze();
+                // chuyển đổi và cập nhật UI
+                return source = ConvertFlippedBitmapToImage(flippedBitmap);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Lỗi khi lật ảnh: {ex.Message}");
+            }
+        }
+
         // Lưu ảnh
         public static void SaveImage(BitmapImage image)
         {
@@ -230,6 +260,24 @@ namespace ImageEditor.Modelss
                 image.BeginInit();
                 image.StreamSource = memoryStream;
                 image.CacheOption = BitmapCacheOption.OnLoad; 
+                image.EndInit();
+                image.Freeze();
+            }
+            return image;
+        }
+        private static BitmapImage ConvertFlippedBitmapToImage(TransformedBitmap flippedBitmap)
+        {
+            BitmapImage image = new BitmapImage();
+            // Tạo bộ nhớ ram
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                PngBitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(flippedBitmap));
+                encoder.Save(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                image.BeginInit();
+                image.StreamSource = memoryStream;
+                image.CacheOption = BitmapCacheOption.OnLoad;
                 image.EndInit();
                 image.Freeze();
             }
