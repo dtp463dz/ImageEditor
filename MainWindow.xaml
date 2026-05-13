@@ -28,7 +28,6 @@
             </VisualBrush.Visual>
         </VisualBrush>
     </Window.Resources>
-
     <DockPanel LastChildFill="True">
         <!-- 1. TOP MENU BAR -->
         <Menu DockPanel.Dock="Top" Background="#1E1E1E" Foreground="White" Padding="5">
@@ -396,6 +395,52 @@
                                     <TextBlock Text="Áp dụng"/>
                                 </StackPanel>
                             </Button>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+                
+                <!--Filter tab-->
+                <TabItem Header="Filter" Background="#252525" Name="TabFilter" Foreground="White">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="10" >
+                            <TextBlock Text="Hiệu ứng Filter" FontSize="14" FontWeight="Bold" Foreground="White"/>
+                            <!-- Row 1: Black & White + Sepia -->
+                            <StackPanel Orientation="Horizontal" >
+                                <Button Name="BtnFilterGrayscale" Content="Trắng Đen" Background="#444444" Foreground="White" 
+                                    Padding="10,8" Click="BtnFilterGrayscale_Click" Width="140"/>
+                                <Button Name="BtnFilterSepia" Content="Sepia" Background="#8B7355" Foreground="White" 
+                                    Padding="10,8" Click="BtnFilterSepia_Click" Width="140"/>
+                            </StackPanel>
+                            <!-- Row 2: Vintage + Bright -->
+                            <StackPanel Orientation="Horizontal" >
+                                <Button Name="BtnFilterVintage" Content="Vintage" Background="#7A7A6E" Foreground="White" 
+                                    Padding="10,8" Click="BtnFilterVintage_Click" Width="140"/>
+                                <Button Name="BtnFilterBright" Content="Tươi Sáng" Background="#FFE082" Foreground="Black" 
+                                    Padding="10,8" Click="BtnFilterBright_Click" Width="140"/>
+                            </StackPanel>
+                            <!-- Row 3: Cool + Warm -->
+                            <StackPanel Orientation="Horizontal" >
+                                <Button Name="BtnFilterCool" Content="Lạnh" Background="#4A90E2" Foreground="White" 
+                                    Padding="10,8" Click="BtnFilterCool_Click" Width="140"/>
+                                <Button Name="BtnFilterWarm" Content="Ấm" Background="#E24A4A" Foreground="White" 
+                                    Padding="10,8" Click="BtnFilterWarm_Click" Width="140"/>
+                            </StackPanel>
+                            <!-- Row 4: Cinema + Noir -->
+                            <StackPanel Orientation="Horizontal">
+                                <Button Name="BtnFilterCinema" Content="Phim Ảnh" Background="#1A1A2E" Foreground="White" 
+                                    Padding="10,8" Click="BtnFilterCinema_Click" Width="140"/>
+                                <Button Name="BtnFilterNoir" Content="Noir" Background="#0D0D0D" Foreground="White" 
+                                    Padding="10,8" Click="BtnFilterNoir_Click" Width="140"/>
+                            </StackPanel>
+                            <!-- Row 5: Fade + Vivid -->
+                            <StackPanel Orientation="Horizontal">
+                                <Button Name="BtnFilterFade" Content="Pastel" Background="#E8D7C3" Foreground="Black" 
+                                    Padding="10,8" Click="BtnFilterFade_Click" Width="140"/>
+                                <Button Name="BtnFilterVivid" Content="Rực Rỡ" Background="#FF6B6B" Foreground="White" 
+                                    Padding="10,8" Click="BtnFilterVivid_Click" Width="140"/>
+                            </StackPanel>
+                            <Separator Background="#333333" Margin="0,10"/>
+                            <TextBlock Text="Nhấn nút để áp dụng hiệu ứng" FontSize="11" Foreground="#AAAAAA" TextAlignment="Center"/>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>

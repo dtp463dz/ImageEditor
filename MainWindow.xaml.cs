@@ -285,7 +285,7 @@ namespace ImageEditor
             }
             catch(Exception ex)
             {
-                MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi");
                 return;
             }
         }
@@ -468,7 +468,6 @@ namespace ImageEditor
         {
             currentBrightness = currentContrast = currentSaturation = 0;
             currentRed = currentBlue = currentGreen = currentHue = 0;
-
             if (SliderBrightness != null) SliderBrightness.Value = 0;
             if (SliderContrast != null) SliderContrast.Value = 0;
             if (SliderSaturation != null) SliderSaturation.Value = 0;
@@ -476,7 +475,6 @@ namespace ImageEditor
             if (SliderGreen != null) SliderGreen.Value = 0;
             if (SliderBlue != null) SliderBlue.Value = 0;
             if (SliderHue != null) SliderHue.Value = 0;
-
             if (BrightnessValue != null) BrightnessValue.Text = "0%";
             if (ContrastValue != null) ContrastValue.Text = "0%";
             if (SaturationValue != null) SaturationValue.Text = "0%";
@@ -486,6 +484,173 @@ namespace ImageEditor
             if (HueValue != null) HueValue.Text = "0°";
             if(PreviewColor != null || PreviewHex != null)
                 UpdateColorPreview();
+        }
+
+        // Filter effects
+        private void BtnFilter_Click(object sender, RoutedEventArgs e)
+        {
+            if(displayImage == null)
+            {
+                MessageBox.Show("Tải ảnh lên trước khi thực hiện");
+                return;
+            }
+            if(this.DataContext is UIViewModel vm)
+            {
+                vm.ShowBrightness = false;
+                vm.ShowColor = false;
+                // hiển thị filter tab
+                if (TabFilter != null) TabFilter.IsSelected = true;
+            }
+        }
+        // Grayscale (trắng đen)
+        private void BtnFilterGrayscale_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (displayImage == null) return;
+                displayImage = FilterEffect.ApplyGrayscale(displayImage);
+                UpdateDisplay();
+                MessageBox.Show("Đã áp dụng Grayscale", "Thành công");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi");
+            }
+        }
+        // Sepia
+        private void BtnFilterSepia_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (displayImage == null) return;
+                displayImage = FilterEffect.ApplySepia(displayImage);
+                UpdateDisplay();
+                MessageBox.Show("Đã áp dụng Sepia", "Thành công");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}", "Thành công");
+            }
+        }
+        // vintage
+        private void BtnFilterVintage_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (displayImage == null) return;
+                displayImage = FilterEffect.ApplyVintage(displayImage);
+                UpdateDisplay();
+                MessageBox.Show("Đã áp dụng Vintage", "Thành công");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}", "Thành công");
+            }
+        }
+        // Bright
+        private void BtnFilterBright_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (displayImage == null) return;
+                displayImage = FilterEffect.ApplyBright(displayImage);
+                UpdateDisplay();
+                MessageBox.Show("Đã áp dụng Bright", "Thành công");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}", "Thành công");
+            }
+        }
+        // Cool
+        private void BtnFilterCool_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (displayImage == null) return;
+                displayImage = FilterEffect.ApplyCool(displayImage);
+                UpdateDisplay();
+                MessageBox.Show("Đã áp dụng Cool", "Thành công");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}", "Thành công");
+            }
+        }
+        // Warm
+        private void BtnFilterWarm_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (displayImage == null) return;
+                displayImage = FilterEffect.ApplyWarm(displayImage);
+                UpdateDisplay();
+                MessageBox.Show("Đã áp dụng Warm", "Thành công");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}", "Thành công");
+            }
+        }
+        // Cinema
+        private void BtnFilterCinema_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (displayImage == null) return;
+                displayImage = FilterEffect.ApplyCinema(displayImage);
+                UpdateDisplay();
+                MessageBox.Show("Đã áp dụng Cinema", "Thành công");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}", "Thành công");
+            }
+        }
+        // Noir
+        private void BtnFilterNoir_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (displayImage == null) return;
+                displayImage = FilterEffect.ApplyNoir(displayImage);
+                UpdateDisplay();
+                MessageBox.Show("Đã áp dụng Noir", "Thành công");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}", "Thành công");
+            }
+        }
+        // Fade
+        private void BtnFilterFade_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (displayImage == null) return;
+                displayImage = FilterEffect.ApplyFade(displayImage);
+                UpdateDisplay();
+                MessageBox.Show("Đã áp dụng Fade", "Thành công");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}", "Thành công");
+            }
+        }
+        // Vivid
+        private void BtnFilterVivid_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (displayImage == null) return;
+                displayImage = FilterEffect.ApplyVivid(displayImage);
+                UpdateDisplay();
+                MessageBox.Show("Đã áp dụng Vivid", "Thành công");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi: {ex.Message}", "Thành công");
+            }
         }
     }
     // Viewmodel : dùng cho data binding
